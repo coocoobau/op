@@ -562,7 +562,7 @@ def main():
     ("OpenpilotEnabledToggle", "1"),
     ("LaneChangeEnabled", "1"),
     ("IsDriverViewEnabled", "0"),
-    ("IsDisengageOnGasEnabled", "1"),
+    ("IsDisengageOnGasEnabled", "0"),
   ]
 
   # set unset params
