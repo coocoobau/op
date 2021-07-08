@@ -141,12 +141,25 @@ class CarController():
         # Cancel ACC if it's engaged with OP disengaged.
         self.graButtonStatesToSend = BUTTON_STATES.copy()
         self.graButtonStatesToSend["cancel"] = True
-      elif enabled and CS.out.standstill:
-        # Blip the Resume button if we're engaged at standstill.
-        # FIXME: This is a naive implementation, improve with visiond or radar input.
-        # A subset of MQBs like to "creep" too aggressively with this implementation.
+      elif enabled and CS.out.vEgo < P.ACC_SEND_RESUME_SPEED_THRESHOLD:
+        # Blip the Resume button if we're engaged and speed is under the "send resume threshold"
+        # and ACC is Paused
         self.graButtonStatesToSend = BUTTON_STATES.copy()
-        self.graButtonStatesToSend["resumeCruise"] = True
+        # Every frame if it gets in here the standstill is true but the ACC might not be paused anymore
+        # The CS.outcruiseState.paused should NOT be included in the condition above as it needs to set the resumeCruise
+        # to false is ACC changed state, otherwise the resumeCruise is interpreted as accelCruise causing the
+        # ACC Set speed to increase during Stop&Go
+        self.graButtonStatesToSend["resumeCruise"] = CS.out.cruiseState.paused
+
+    if self.graButtonStatesToSend is not None:
+      # Finally address the scenario when last frame set the resumeCruise to True, but this frame should set it back to
+      # false. The previous condition "CS.out.vEgo < P.ACC_SEND_RESUME_SPEED_THRESHOLD"
+      # will evaluate to false causing resumeCruise to remain active. If still sending buttons make sure that resume
+      # is only sent while ACC is paused. Otherwise we will end up sending accelCruise. Every time resume is sent and
+      # standstill, the car enters ACC Ready mode for the next 3 seconds, and will start on its own as soon as clear,
+      # Combine this with current resumeCruise value so we don't set resumeCruise = True here. It can only cancel
+      # early a previously set resumeCruise = True.
+      self.graButtonStatesToSend["resumeCruise"] = (CS.out.cruiseState.paused and self.graButtonStatesToSend["resumeCruise"])
 
     # OP/Panda can see this message but can't filter it when integrated at the
     # R242 LKAS camera. It could do so if integrated at the J533 gateway, but

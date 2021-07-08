@@ -121,6 +121,10 @@ class CarState(CarStateBase):
     if ret.cruiseState.speed > 90:
       ret.cruiseState.speed = 0
 
+    # Update the ACC Paused state, this should be true when ACC is ON but Paused (while standstill)
+    ret.cruiseState.paused = bool(acc_cp.vl["ACC_06"]['ACC_Anhalten'])
+
+
     # Update control button states for turn signals and ACC controls.
     self.buttonStates["accelCruise"] = bool(pt_cp.vl["GRA_ACC_01"]['GRA_Tip_Hoch'])
     self.buttonStates["decelCruise"] = bool(pt_cp.vl["GRA_ACC_01"]['GRA_Tip_Runter'])
@@ -236,11 +240,14 @@ class CarState(CarStateBase):
                   ("SWA_Warnung_SWA_li", "SWA_01", 0),    # Blindspot object warning, left
                   ("SWA_Infostufe_SWA_re", "SWA_01", 0),  # Blindspot object info, right
                   ("SWA_Warnung_SWA_re", "SWA_01", 0),    # Blindspot object warning, right
-                  ("ACC_Wunschgeschw", "ACC_02", 0)]      # ACC set speed
+                  ("ACC_Wunschgeschw", "ACC_02", 0),      # ACC set speed
+                  ("ACC_Anhalten", "ACC_06", 0)]          # ACC set paused
+
       checks += [("ACC_10", 50),  # From J428 ACC radar control module
                  # FIXME: SWA_01 should be checked when we have better detection of installed hardware
                  #("SWA_01", 20),  # From J1086 Lane Change Assist module
-                 ("ACC_02", 17)]  # From J428 ACC radar control module
+                 ("ACC_02", 17),  # From J428 ACC radar control module
+                 ("ACC_06", 50)]  # From ???
 
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.pt)
 
@@ -274,10 +281,13 @@ class CarState(CarStateBase):
                   ("SWA_Warnung_SWA_li", "SWA_01", 0),    # Blindspot object warning, left
                   ("SWA_Infostufe_SWA_re", "SWA_01", 0),  # Blindspot object info, right
                   ("SWA_Warnung_SWA_re", "SWA_01", 0),    # Blindspot object warning, right
-                  ("ACC_Wunschgeschw", "ACC_02", 0)]              # ACC set speed
+                  ("ACC_Wunschgeschw", "ACC_02", 0),      # ACC set speed
+                  ("ACC_Anhalten", "ACC_06", 0)]          # ACC set paused
+
       checks += [("ACC_10", 50),  # From J428 ACC radar control module
                  # FIXME: SWA_01 should be checked when we have better detection of installed hardware
                  #("SWA_01", 20),  # From J1086 Lane Change Assist module
-                 ("ACC_02", 17)]  # From J428 ACC radar control module
+                 ("ACC_02", 17),  # From J428 ACC radar control module
+                 ("ACC_06", 50)]  # From ???
 
     return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, CANBUS.cam)

@@ -18,6 +18,8 @@ class CarControllerParams:
   STEER_DRIVER_ALLOWANCE = 80
   STEER_DRIVER_MULTIPLIER = 3    # weight driver torque heavily
   STEER_DRIVER_FACTOR = 1        # from dbc
+  ACC_SEND_RESUME_SPEED_THRESHOLD = 0.001    # Bellow this speed car is at full stop. Used for ACC standstill detection.
+
 
 class CANBUS:
   pt = 0
