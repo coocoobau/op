@@ -1,3 +1,11 @@
+Version 0.7.9.1 - VW 1.6 - CCB 1.0 (2021-07-07)
+========================
+**WARNING**: These changes are not following _Comma Safety_ and are experimental! **You might crash and die if using this branch!**
+***
+ * (VW CooCooBau) Changed threshold for automatic lane change speed to 55 KPH
+ * (VW CooCooBau) Do not disable on gas pressed
+ * (VW CooCooBau) Fixed ACC Set speed creeping up during stop & go.
+
 Version 0.7.9.1 + VW 1.6 (2021-05-27)
 ========================
  * If you have a Comma Two, time to upgrade! This branch is very old.
